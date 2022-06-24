@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wu.mapper.AuthorizationMapper">
+    <insert id="addAuthorization" parameterType="com.wu.pojo.Authorization">
+        insert into authorization (authen_id,user_id,
+                               user_authorization,goods_authorization,
+                               ware_authorization
+        ) values (
+                     #{authenId},#{userId},
+                     #{userAuthorization},#{goodsAuthorization},
+                     #{wareAuthorization}
+                 )
+    </insert>
+
+    <select id="selectByAuthorizationId" parameterType="Integer" resultType="com.wu.pojo.Authorization">
+        select * from authorization where user_id=#{userId}
+    </select>
+    <resultMap id="authorizationMap" type="com.wu.pojo.Authorization">
+        <id column="authen_id" property="authenId"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_authorization" property="userAuthorization"/>
+        <result column="goods_authorization" property="goodsAuthorization"/>
+        <result column="ware_authorization" property="wareAuthorization"/>
+        <association property ="user" javaType="com.wu.pojo.User">
+            <id column="user_id" property="userId"/>
+            <result column="user_account" property="userAccount"/>
+            <result column="user_name" property="userName"/>
+            <result column="user_password" property="userPassword"/>
+            <result column="user_phone" property="userPhone"/>
+            <result column="user_email" property="userEmail"/>
+            <result column="user_role" property="userRole"/>
+        </association>
+    </resultMap>
+
+    <select id="selectAuthorization" resultType="com.wu.pojo.Authorization" parameterType="Map">
+        select authorization .* from authorization,user where user.user_id=authorization.user_id and user.user_role=1
+        <if test="userAccount != null and userAccount!='' ">and user.user_account like concat("%", #{userAccount},"%")  </if>
+        <if test="userName != null and userName!='' "> and user.user_name like concat("%",#{userName},"%")</if>
+     </select>
+
+    <delete id="deleteAuthorization" parameterType="Integer">
+        delete from authorization where user_id =#{userId}
+    </delete>
+
+    <update id="editAuthorization" parameterType="com.wu.pojo.Authorization">
+        update authorization
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userAuthorization !=null  and userAuthorization !=0">
+                user_authorization = #{userAuthorization},
+            </if>
+            <if test="goodsAuthorization !=null and goodsAuthorization !=0 ">
+                goods_authorization = #{goodsAuthorization},
+            </if>
+            <if test="wareAuthorization !=null and wareAuthorization !=0">
+                ware_authorization = #{wareAuthorization},
+            </if>
+        </trim>
+        where user_id=#{userId}
+    </update>
+
+
+</mapper>

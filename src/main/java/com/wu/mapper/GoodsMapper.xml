@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wu.mapper.GoodsMapper">
+
+    <resultMap id="goods" type="java.util.HashMap">
+        <result column="goods_id" property="goodsId" javaType="java.lang.Integer"/>
+        <result column="goods_code" property="goodsId" javaType="java.lang.String"/>
+        <result column="type_id" property="goodsId" javaType="java.lang.Integer"/>
+        <result column="goods_stock" property="goodsId" javaType="java.lang.Integer"/>
+        <result column="goods_name" property="goodsId" javaType="java.lang.String"/>
+        <result column="goods_size" property="goodsId" javaType="java.lang.String"/>
+        <result column="goods_color" property="goodsId" javaType="java.lang.String"/>
+        <result column="goods_price" property="goodsId" javaType="java.lang.Float"/>
+        <result column="goods_company" property="goodsId" javaType="java.lang.String"/>
+        <result column="type_name" property="typeName" javaType="java.lang.String"/>
+    </resultMap>
+    <select id="findGoods" parameterType="map" resultType="goods">
+        select goods.* ,type.type_name from goods,type where goods.type_id=type.type_id  and 1=1
+       <if test="typeId != null and typeId !=0">
+        and type.type_id = #{typeId}
+        </if>
+        <if test="goodsName !=null and goodsName !='' ">
+        and goods_name like concat("%",#{goodsName},"%")
+        </if>
+        <if test="goodsCode !=null and goodsCoe != ''">
+            and goods_code like concat("%",#{goodsCode},"%")
+        </if>
+        <if test="lowPrice !=null and lowPrice>=0 ">
+            and goods_price &gt;= #{lowPrice}
+        </if>
+        <if test=" highPrice != null and highPrice>=0">
+            and goods_price &lt;= #{highPrice}
+        </if>
+        <if test="status == 1 and status!=null">
+           and goods_stock &gt; 0
+        </if>
+        <if test="status == 2 and status!=null">
+            and goods_stock = 0
+        </if>
+    </select>
+
+    <select id="findGoodsByCode" resultType="com.wu.pojo.Goods">
+        select * from goods <where>
+            <if test="goodsCode!=null">
+            goods_code = #{goodsCode}
+            </if>
+    </where>
+    </select>
+
+    <select id="findGoodsById" parameterType="Integer" resultType="com.wu.pojo.Goods">
+        select  * from goods where goods_id=#{goodsId}
+    </select>
+    <select id="findGoodsByName" resultType="com.wu.pojo.Goods">
+        select * from goods <where>
+        <if test="goodsName !=null and goodsName !='' ">
+        and goods_Name like concat("%",#{goodsName},"%")
+       </if>
+    </where>
+    </select>
+
+<!--    <select id="findGoodsByPrice" parameterType="com.wu.pojo.Price" resultType="com.wu.pojo.Goods">-->
+<!--        select  * from goods-->
+<!--    <where>-->
+<!--    <if test="lowPrice>0">-->
+<!--       and goods_price > #{lowPrice}-->
+<!--    </if>-->
+<!--    <if test="highPrice>0">-->
+<!--        and goods_price &lt; #{highPrice}-->
+<!--    </if>-->
+<!--    </where>-->
+<!--    </select>-->
+
+    <insert id="addGoods" parameterType="com.wu.pojo.Goods">
+        insert into goods(goods_id,goods_code,
+                          type_id,goods_stock,
+                          goods_name,goods_size,
+                          goods_color,goods_price,
+                          goods_company)values
+            (#{goodsId},#{goodsCode},
+             #{typeId},#{goodsStock},
+             #{goodsName},#{goodsSize},
+             #{goodsColor},#{goodsPrice},
+             #{goodsCompany})
+    </insert>
+
+    <delete id="deleteGoods" parameterType="Integer">
+        delete from goods where goods_Id = #{goodsId}
+    </delete>
+
+    <update id="updateGoods" parameterType="com.wu.pojo.Goods" >
+        update goods
+        <set>
+            <if test="typeId!=null and typeId > 0">
+                type_id = #{typeId},
+            </if>
+            <if test="goodsStock!=null and goodsStock >=0 ">
+                goods_stock = #{goodsStock},
+            </if>
+            <if test="goodsName!=null ">
+                goods_name = #{goodsName},
+            </if>
+            <if test="goodsSize!=null">
+                goods_size = #{goodsSize},
+            </if>
+            <if test="goodsColor!=null">
+                goods_color = #{goodsColor},
+            </if>
+            <if test="goodsPrice!=null and goodsPrice>=0.0">
+                goods_price = #{goodsPrice},
+            </if>
+            <if test="goodsCompany!=null">
+                goods_company = #{goodsCompany}
+            </if>
+        </set>
+        where  goods_code = #{goodsCode}
+    </update>
+
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wu.mapper.TypeMapper">
+
+    <select id="findTypeNameById" resultType="com.wu.pojo.Type">
+        select * from type where 1=1
+        <if test="typeId != null">
+            and type_id= #{typeId}
+        </if>
+    </select>
+     <select id="selectAllType" resultType="com.wu.pojo.Type">
+         select * from type
+     </select>
+
+    <select id="selectType" parameterType="Type" resultType="com.wu.pojo.Type">
+        select *  from type where  1=1
+        <if test="typeName != null and typeName !=''">
+            and type_name like concat("%",#{typeName},"%")
+        </if>
+    </select>
+
+    <insert id="addType" parameterType="com.wu.pojo.Type">
+        insert into type(type_id,type_Name)
+                                          values (#{typeId},#{typeName}
+                                                 )
+    </insert>
+
+    <delete id="deleteType" parameterType="Integer">
+        delete
+        from type
+        where type_id=#{typeId};
+    </delete>
+
+    <update id="editType" parameterType="com.wu.pojo.Type">
+        UPDATE type
+        <trim prefix="set" suffixOverrides=",">
+            <if test="typeName != null and typeName!=''">
+                type_name= #{typeName},
+            </if>
+        </trim>
+        where type_id=#{typeId}
+    </update>
+</mapper>

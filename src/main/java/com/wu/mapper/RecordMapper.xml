@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wu.mapper.RecordMapper">
+    <insert id="addRecord" parameterType="com.wu.pojo.Record">
+        insert into record(record_id,record_code,record_warehouse,
+                           record_time,record_name,record_origin,
+                           record_status) values (#{recordId},#{recordCode},
+                           #{recordWarehouse},#{recordTime},#{recordName},
+                           #{recordOrigin},#{recordStatus}
+                           )
+    </insert>
+
+    <select id="selectByRecordId" parameterType="Integer" resultType="com.wu.pojo.Record">
+        select * from record where record_id=#{recordId}
+    </select>
+    <select id="selectByRecordCode" parameterType="String" resultType="com.wu.pojo.Record">
+        select * from record where record_code=#{recordCode}
+    </select>
+
+    <select id="selectRecord" resultType="com.wu.pojo.Record" parameterType="Map">
+        select * from record where  1=1
+        <if test="startTime != null"> and record_time &gt;= #{startTime}</if>
+        <if test="endTime !=null">and record_time &lt;= #{endTime} </if>
+        <if test="recordWarehouse !=null and recordWarehouse != '' ">and record_warehouse like concat("%",#{recordWarehouse},"%")</if>
+        <if test="recordCode !=null and recordCode != '' ">and record_code like concat("%",#{recordCode},"%")</if>
+        <if test="recordStatus !=null and recordStatus != 0">and record_status = #{recordStatus}</if>
+    </select>
+
+    <delete id="deleteRecord" parameterType="Integer">
+        delete from record where record_id =#{recordId}
+    </delete>
+
+    <update id="editRecord" parameterType="com.wu.pojo.Record">
+        UPDATE record
+        <trim prefix="set" suffixOverrides=",">
+            <if test="recordWarehouse !=null and recordWarehouse != ''">
+                record_warehouse = #{recordWarehouse},
+            </if>
+            <if test="recordTime != null">
+                record_time = #{recordTime},
+            </if>
+            <if test="recordName !=null and  recordName != '' ">
+                record_name = #{recordName},
+            </if>
+            <if test="recordOrigin !=null and recordOrigin !='' ">
+                record_origin =#{recordOrigin},
+            </if>
+            <if test="recordStatus != null">
+                record_status= #{recordStatus},
+            </if>
+        </trim>
+        where record_id=#{recordId}
+    </update>
+    <select id="selectAllRecord" parameterType="Integer" resultType="com.wu.pojo.Record">
+        select * from record where 1=1
+        <if test="status != null">
+            and record_status=#{status}
+        </if>
+    </select>
+</mapper>

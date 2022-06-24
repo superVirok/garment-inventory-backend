@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wu.mapper.RecordItemMapper">
+    <insert id="addRecordItem" parameterType="com.wu.pojo.RecordItem">
+        insert into recorditem(recordItem_id,record_id,
+                           goods_id,recordItem_count
+                           ) values (
+                            #{recordItemId},#{recordId},
+                            #{goodsId},#{recordItemCount}
+                                    )
+    </insert>
+
+    <select id="selectByRecordItemId" parameterType="Integer" resultType="com.wu.pojo.RecordItem">
+        select * from recorditem where recordItem_id = #{recordItemId}
+    </select>
+
+
+    <resultMap id="recordItemMap" type="com.wu.pojo.RecordItem">
+        <id column="recorditem.recordItem_id" property="recordItemId"/>
+        <result column="recorditem.recordItem_count" property="recordItemCount"/>
+        <result column="record.record_id" property="recordId"/>
+        <result column="goods.goods_id" property="goodsId"/>
+        <result column="record.record_code" property="recordCode"/>
+        <association property ="goods" javaType="com.wu.pojo.Goods">
+            <result column="goods.goods_code" property="goodsCode"/>
+            <result column="goods.goods_stock" property="goodsStock"/>
+            <result column="goods.goods_name" property="goodsName"/>
+            <result column="goods.goods_size" property="goodsSize"/>
+            <result column="goods.goods_color" property="goodsColor"/>
+            <result column="goods.goods_price" property="goodsPrice"/>
+            <result column="goods.goods_company" property="goodsCompany"/>
+        </association>
+        <association property="type" javaType="com.wu.pojo.Type">
+            <id column="type.type_id" property="typeId"/>
+            <result column="type.type_name" property="typeName"/>
+        </association>
+    </resultMap>
+    <select id="selectRecordItem" resultType="com.wu.pojo.RecordItem" parameterType="Map">
+        select DISTINCT recorditem.*
+        from recorditem,record,goods,type  where  recorditem.record_id = record.record_id
+        and recorditem.goods_id=goods.goods_id
+        and goods.type_id=type.type_id
+        <if test="recordCode !=null">and record.record_code like concat("%",#{recordCode},"%")</if>
+        <if test="recordStatus !=null and recordStatus !=0 "> and record.record_status = #{recordStatus}</if>
+    </select>
+<!--    <select id="selectRecordItem" resultMap="recordItemMap" parameterType="Map">-->
+<!--        select DISTINCT recorditem.recordItem_id,recorditem.recordItem_count,record.record_id,record.record_code,record.record_warehouse,-->
+<!--                        record.record_time,record.record_name,record.record_origin,-->
+<!--                        record.record_status,goods.goods_id,goods.goods_code,goods.type_id,goods.goods_stock,goods.goods_name,goods.goods_size,-->
+<!--                        goods.goods_color,goods.goods_price,goods.goods_company,type.type_name-->
+<!--                        from recorditem,record,goods,type  where  recorditem.record_id = record.record_id-->
+<!--                                                              and recorditem.goods_id=goods.goods_id-->
+<!--                                                              and goods.type_id=type.type_id-->
+<!--        <if test="recordCode !=null">and record.record_code like concat("%",#{recordCode},"%")</if>-->
+<!--        <if test="recordStatus !=null and recordStatus !=0 "> and record.record_status = #{recordStatus}</if>-->
+<!--    </select>-->
+
+    <delete id="deleteRecordItem" parameterType="Integer">
+        delete from recorditem where recordItem_id =#{recordItemId}
+    </delete>
+
+    <update id="editRecordItem" parameterType="com.wu.pojo.RecordItem">
+        update recorditem
+        <trim prefix="set" suffixOverrides=",">
+            <if test="recordItemCount !=null and recordItemCount >=0 ">
+                recordItem_count = #{recordItemCount},
+            </if>
+        </trim>
+        where recordItem_id=#{recordItemId}
+    </update>
+
+
+</mapper>
